@@ -5,10 +5,10 @@ package org.warfarin.ckyschool.sidecarj.remote.plugin
 import java.lang.Exception
 
 class RemotingPluginFactory {
-    private val plugins: MutableMap<Byte, BaseRemotingPluginKit> = mutableMapOf()
+    private val plugins: MutableMap<Byte, BaseRemotingPluginKit<*>> = mutableMapOf()
 
     @Throws(PluginRegisterConflictError::class)
-    fun register(plugin: BaseRemotingPluginKit, allowOverride: Boolean = false) {
+    fun register(plugin: BaseRemotingPluginKit<*>, allowOverride: Boolean = false) {
         synchronized(this) {
             if (!allowOverride && plugins.containsKey(plugin.id)) {
                 throw PluginRegisterConflictError(plugin.id, "Plugin register failed: conflicted ID=${plugin.id}")
@@ -17,7 +17,7 @@ class RemotingPluginFactory {
         }
     }
 
-    fun get(id: Byte): BaseRemotingPluginKit? {
+    fun get(id: Byte): BaseRemotingPluginKit<*>? {
         return plugins[id]
     }
 
