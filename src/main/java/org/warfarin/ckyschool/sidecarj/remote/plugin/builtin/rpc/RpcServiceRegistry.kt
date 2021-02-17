@@ -1,12 +1,12 @@
 package org.warfarin.ckyschool.sidecarj.remote.plugin.builtin.rpc
 
 class RpcServiceRegistry {
-    fun getApiMeta(apiName: String): RpcApiMeta? {
+    fun getApiMeta(apiUrl: String, role: RpcApiRole): RpcApiMeta? {
         TODO("Not yet implemented")
     }
 
     companion object {
-        val INSTANCE = RpcSerializerFactory()
+        val INSTANCE = RpcServiceRegistry()
     }
 }
 
@@ -16,9 +16,15 @@ data class RpcServiceMeta(
 )
 
 data class RpcApiMeta(
-        val apiName: String,
+        val apiUrl: String,
         val enabled: Boolean,
         val paramHints: RpcPayloadSerializationHint,
+        val resultHint: RpcPayloadSerializationHint,
         val timeoutMs: Int = 5000,
         val qpsLimit: Int?
 )
+
+enum class RpcApiRole {
+    CONSUMER,
+    PROVIDER
+}

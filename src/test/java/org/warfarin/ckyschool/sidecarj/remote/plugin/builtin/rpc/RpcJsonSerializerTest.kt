@@ -10,6 +10,7 @@ class RpcJsonSerializerTest {
     private val serializer = RpcJsonSerializer()
 
     private val hints = RpcPayloadSerializationHint(
+            RpcPayloadSerializationHint.PAYLOAD_TYPE_REQUEST,
             listOf(
                     PojoA::class.java.canonicalName,
                     PojoB::class.java.canonicalName,

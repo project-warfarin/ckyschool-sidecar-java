@@ -7,9 +7,13 @@ interface RpcSerializer {
 }
 
 data class RpcPayloadSerializationHint(
+        val type: Int,
         val classNames: List<String>
 ) {
     companion object {
-        val VOID_PARAMS = RpcPayloadSerializationHint(listOf())
+        const val PAYLOAD_TYPE_REQUEST = 1
+        const val PAYLOAD_TYPE_RESPONSE = 2
+
+        val VOID_PARAMS = RpcPayloadSerializationHint(PAYLOAD_TYPE_REQUEST, listOf())
     }
 }

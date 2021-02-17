@@ -3,6 +3,7 @@ package org.warfarin.ckyschool.sidecarj.remote.plugin.builtin.rpc
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.warfarin.ckyschool.sidecarj.remote.plugin.builtin.defaults.SerializationProtocolIds
+import java.lang.Exception
 
 class RpcJsonSerializer : RpcSerializer {
     override val id: Int
@@ -20,25 +21,34 @@ class RpcJsonSerializer : RpcSerializer {
             }
         }
 
-        val json = objectMapper.readValue(raw, List::class.java)
+        when (hint!!.type) {
+            RpcPayloadSerializationHint.PAYLOAD_TYPE_REQUEST -> {
+                val json = objectMapper.readValue(raw, List::class.java)
 
-        val classes = hint!!.classNames.map {
-            Class.forName(it)
-        }
+                val classes = hint.classNames.map {
+                    Class.forName(it)
+                }
 
-        val jsonIterator = json.asIterable().iterator()
-        val classIterator = classes.iterator()
-        val results: MutableList<Any?> = mutableListOf()
-        while (classIterator.hasNext()) {
-            if (!jsonIterator.hasNext()) {
-                throw RuntimeException("JSON array exhausted: ${classes.size} element(s)")
+                val jsonIterator = json.asIterable().iterator()
+                val classIterator = classes.iterator()
+                val results: MutableList<Any?> = mutableListOf()
+                while (classIterator.hasNext()) {
+                    if (!jsonIterator.hasNext()) {
+                        throw RuntimeException("JSON array exhausted: ${classes.size} element(s)")
+                    }
+                    val clazz = classIterator.next()
+                    val json = jsonIterator.next()
+                    val obj = objectMapper.convertValue(json, clazz)
+                    results.add(obj)
+                }
+                return results
             }
-            val clazz = classIterator.next()
-            val json = jsonIterator.next()
-            val obj = objectMapper.convertValue(json, clazz)
-            results.add(obj)
+            RpcPayloadSerializationHint.PAYLOAD_TYPE_RESPONSE -> {
+                val clazz = Class.forName(hint.classNames.first())
+                return listOf(objectMapper.readValue(raw, clazz))
+            }
+            else -> throw Exception("RpcPayloadSerializationHint.type ${hint.type} not recognized")
         }
-        return results
     }
 
     override fun <T> toBytes(obj: T?): ByteArray? {
