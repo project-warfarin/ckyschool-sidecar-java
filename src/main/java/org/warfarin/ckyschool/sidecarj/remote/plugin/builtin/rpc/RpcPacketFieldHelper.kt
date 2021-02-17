@@ -1,0 +1,25 @@
+package org.warfarin.ckyschool.sidecarj.remote.plugin.builtin.rpc
+
+class RpcPacketFieldHelper {
+    @Suppress("MemberVisibilityCanBePrivate")
+    companion object {
+        const val LENGTH_SERIALIZATION_PROTOCOL_ID = 4
+        const val LENGTH_PACKET_TYPE = 4
+        const val LENGTH_CALLTRACE_ID = 16
+        const val LENGTH_API_URL_LENGTH = 4
+
+        const val OFFSET_SERIALIZATION_PROTOCOL_ID = 0
+        const val OFFSET_PACKET_TYPE = LENGTH_SERIALIZATION_PROTOCOL_ID
+        const val OFFSET_CALLTRACE_ID = OFFSET_PACKET_TYPE + LENGTH_PACKET_TYPE
+        const val OFFSET_API_URL_LENGTH = OFFSET_CALLTRACE_ID + LENGTH_CALLTRACE_ID
+        const val OFFSET_API_URL = OFFSET_API_URL_LENGTH + LENGTH_API_URL_LENGTH
+
+        val RANGE_SERIALIZATION_PROTOCOL_ID = IntRange(OFFSET_SERIALIZATION_PROTOCOL_ID, OFFSET_SERIALIZATION_PROTOCOL_ID + LENGTH_SERIALIZATION_PROTOCOL_ID)
+        val RANGE_PACKET_TYPE = IntRange(OFFSET_PACKET_TYPE, OFFSET_PACKET_TYPE + LENGTH_PACKET_TYPE)
+        val RANGE_CALLTRACE_ID = IntRange(OFFSET_CALLTRACE_ID, OFFSET_CALLTRACE_ID + LENGTH_CALLTRACE_ID)
+        val RANGE_API_URL_LENGTH = IntRange(OFFSET_API_URL_LENGTH, OFFSET_API_URL_LENGTH + LENGTH_API_URL_LENGTH)
+        val RANGE_API_URL = { apiUrlLength: Int ->
+            IntRange(OFFSET_API_URL, OFFSET_API_URL + apiUrlLength)
+        }
+    }
+}

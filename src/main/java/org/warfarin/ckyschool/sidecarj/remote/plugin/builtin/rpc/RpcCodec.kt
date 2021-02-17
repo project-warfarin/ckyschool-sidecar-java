@@ -5,12 +5,12 @@ import org.warfarin.ckyschool.sidecarj.util.intFromLittleEndianBytes
 
 class RpcCodec : RemotingPluginCodec<Void, RpcPacketMeta> {
     override fun decode(input: ByteArray): RpcPacketMeta {
-        val serializationProtocolId = input.intFromLittleEndianBytes(0, 4)
-        val packetType = input.intFromLittleEndianBytes(4, 4+4)
-        val calltraceId = String(input.sliceArray(IntRange(4+4, 4+16)))
-        val apiUrlLength = input.intFromLittleEndianBytes(4+4+16, 4+4+16+4)
-        val apiUrl = String(input.sliceArray(IntRange(4+4+16+4, 4+4+16+4 + apiUrlLength)))
-        val actualHeaderLength = 4 + 4 + 16 + 4 + apiUrlLength
+        val serializationProtocolId = input.intFromLittleEndianBytes(RpcPacketFieldHelper.RANGE_SERIALIZATION_PROTOCOL_ID)
+        val packetType = input.intFromLittleEndianBytes(RpcPacketFieldHelper.RANGE_PACKET_TYPE)
+        val calltraceId = String(input.sliceArray(RpcPacketFieldHelper.RANGE_CALLTRACE_ID))
+        val apiUrlLength = input.intFromLittleEndianBytes(RpcPacketFieldHelper.RANGE_API_URL_LENGTH)
+        val apiUrl = String(input.sliceArray(RpcPacketFieldHelper.RANGE_API_URL(apiUrlLength)))
+        val actualHeaderLength = RpcPacketFieldHelper.OFFSET_API_URL + apiUrlLength
 
         val serializer = RpcSerializerFactory.INSTANCE.get(serializationProtocolId)!!
         val role = when (packetType) {

@@ -6,3 +6,9 @@ fun ByteArray.intFromLittleEndianBytes(start: Int, endExclusive: Int): Int {
     }
 }
 
+fun ByteArray.intFromLittleEndianBytes(range: IntRange): Int {
+    return this.sliceArray(range).let {
+        it[0].toInt() + (it[1].toInt() shl 8) + (it[2].toInt() shl 16) + (it[3].toInt() shl 24)
+    }
+}
+
