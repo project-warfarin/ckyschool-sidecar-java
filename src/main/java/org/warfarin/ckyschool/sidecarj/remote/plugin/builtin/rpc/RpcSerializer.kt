@@ -11,8 +11,8 @@ data class RpcPayloadSerializationHint(
         val classNames: List<String>
 ) {
     companion object {
-        const val PAYLOAD_TYPE_REQUEST = 1
-        const val PAYLOAD_TYPE_RESPONSE = 2
+        const val PAYLOAD_TYPE_REQUEST = 0
+        const val PAYLOAD_TYPE_RESPONSE = 1
 
         val VOID_PARAMS = RpcPayloadSerializationHint(PAYLOAD_TYPE_REQUEST, listOf())
     }
