@@ -7,8 +7,8 @@ import org.warfarin.ckyschool.sidecarj.util.intFromLittleEndianBytes
 class RpcCodec : RemotingPluginCodec<Void, RpcPacketMeta> {
     override fun decode(input: ByteArray): RpcPacketMeta {
         val featureWord = input.intFromBigEndianBytes(0, 4)
-        val serializationProtocolId = featureWord and 0xFFFF
-        val packetType = (featureWord shl 16) and 0xFFFF
+        val serializationProtocolId = featureWord and 0xFF
+        val packetType = (featureWord ushr 16) and 0x1
 
         val calltraceId = String(input.sliceArray(IntRange(4, 4 + 16 - 1)))
         val apiUrlLength =  input.intFromBigEndianBytes(4 + 16, 4 + 16 + 4)
@@ -33,8 +33,8 @@ class RpcCodec : RemotingPluginCodec<Void, RpcPacketMeta> {
             if (it == RpcPayloadSerializationHint.VOID_PARAMS) {
                 RpcObjectMeta.VOID_ARGUMENTS
             }
-            val payloadObjects = serializer.fromBytes(input.sliceArray(IntRange(actualHeaderLength, input.size)), hint)
-            IntRange(0, it.classNames.size).map { index ->
+            val payloadObjects = serializer.fromBytes(input.sliceArray(IntRange(actualHeaderLength, input.lastIndex)), hint)
+            IntRange(0, it.classNames.lastIndex).map { index ->
                 RpcObjectMeta(it.classNames[index], payloadObjects?.get(index))
             }
         }

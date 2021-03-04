@@ -30,3 +30,9 @@ fun ByteArray.fillWithLittleEndianBytesFromInt(from: Int, offset: Int) {
     this[offset + 2] = ((from ushr 16) and 0xFF).toByte()
     this[offset + 3] = ((from ushr 24) and 0xFF).toByte()
 }
+fun ByteArray.fillWithBigEndianBytesFromInt(from: Int, offset: Int) {
+    this[offset + 3] = (from and 0xFF).toByte()
+    this[offset + 2] = ((from ushr 8) and 0xFF).toByte()
+    this[offset + 1] = ((from ushr 16) and 0xFF).toByte()
+    this[offset] = ((from ushr 24) and 0xFF).toByte()
+}
