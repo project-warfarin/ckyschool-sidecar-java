@@ -34,7 +34,7 @@ class RpcCodecTest {
         val featureWord = SerializationProtocolIds.JSON and 0xFF        // request in json
         val callTraceId = "4cdbc040657a4847"
         val apiUrl = "yjsnpi://blacktea-service/enchant"
-        val arg1 = RpcCodecTestArgType1(1, "arg1-锟斤拷-argfoobar")
+        val arg1 = RpcCodecTestArgType1(1, "arg1-锟斤拷-argfoobar", RpcCodecTestArgInner(3, listOf(4, 5)))
         val arg2 = RpcCodecTestArgType2(2L, true, SimpleDateFormat("yyyy-MM-dd").parse("1453-05-29"))
         val argJson = String.format("[%s,%s]", jacksonObjectMapper().writeValueAsString(arg1), jacksonObjectMapper().writeValueAsString(arg2))
 
@@ -63,11 +63,17 @@ class RpcCodecTest {
 
 data class RpcCodecTestArgType1(
         @JsonProperty("intVal") val intVal: Int,
-        @JsonProperty("stringVal") val stringVal: String
+        @JsonProperty("stringVal") val stringVal: String,
+        @JsonProperty("innerVal") val innerVal: RpcCodecTestArgInner
 )
 
 data class RpcCodecTestArgType2(
         @JsonProperty("longVal") val longVal: Long,
         @JsonProperty("booleanVal") val booleanVal: Boolean,
         @JsonProperty("dateVal") val dateVal: Date
+)
+
+data class RpcCodecTestArgInner(
+        @JsonProperty("intVal") val intVal: Int,
+        @JsonProperty("listVal") val listVal: List<Int>
 )
