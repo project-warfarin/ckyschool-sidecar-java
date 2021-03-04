@@ -52,6 +52,12 @@ class RpcCodecTest {
         val rpcCodec = RpcCodec()
         val rpcPacketMeta = rpcCodec.decode(requestBuffer)
         println(jacksonObjectMapper().writeValueAsString(rpcPacketMeta))
+
+        val arg1Reflection = rpcPacketMeta.payload!![0]!!.obj as RpcCodecTestArgType1
+        val arg2Reflection = rpcPacketMeta.payload!![1]!!.obj as RpcCodecTestArgType2
+
+        assert(arg1 == arg1Reflection)
+        assert(arg2 == arg2Reflection)
     }
 }
 
