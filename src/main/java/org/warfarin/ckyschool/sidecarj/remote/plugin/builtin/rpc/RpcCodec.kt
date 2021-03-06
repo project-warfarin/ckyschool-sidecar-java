@@ -1,10 +1,10 @@
 package org.warfarin.ckyschool.sidecarj.remote.plugin.builtin.rpc
 
 import org.warfarin.ckyschool.sidecarj.remote.plugin.RemotingPluginCodec
+import org.warfarin.ckyschool.sidecarj.util.fillWithBigEndianBytesFromInt
 import org.warfarin.ckyschool.sidecarj.util.intFromBigEndianBytes
-import org.warfarin.ckyschool.sidecarj.util.intFromLittleEndianBytes
 
-class RpcCodec : RemotingPluginCodec<Void, RpcPacketMeta> {
+class RpcCodec : RemotingPluginCodec<RpcPacketMeta, RpcPacketMeta> {
     override fun decode(input: ByteArray): RpcPacketMeta {
         val featureWord = input.intFromBigEndianBytes(0, 4)
         val serializationProtocolId = featureWord and 0xFF
@@ -44,13 +44,40 @@ class RpcCodec : RemotingPluginCodec<Void, RpcPacketMeta> {
                 packetType,
                 calltraceId,
                 apiUrl,
-                payload
+                payload,
+                apiMeta
         )
     }
 
-    override fun encode(serializationProtocolId: Int, packetType: Int, input: Any?, meta: Void?): ByteArray? {
-//        val serializer = RpcSerializerFactory.INSTANCE.get(serializationProtocolId)!!
-//        return serializer.toBytes(input)
-        TODO()
+    override fun encode(meta: RpcPacketMeta, input: Any?): ByteArray? {
+        val serializer = RpcSerializerFactory.INSTANCE.get(meta.serializationProtocolId)
+
+        val featureWord = (meta.serializationProtocolId and 0xFF) or ((meta.packetType and 0x1) shl 16)
+        val calltraceId = meta.calltraceId
+        val apiUrlBytes = meta.apiUrl.toByteArray()
+        val apiUrlLength = apiUrlBytes.size
+
+        val hint = when (meta.packetType) {
+            RpcPacketMeta.PACKET_TYPE_REQUEST -> meta.apiMeta.paramHints
+            RpcPacketMeta.PACKET_TYPE_RESPONSE -> meta.apiMeta.resultHint
+            else -> throw Exception("RPC packet type ${meta.packetType} not recognized")
+        }
+        val actualInput = when (meta.packetType) {
+            RpcPacketMeta.PACKET_TYPE_REQUEST -> meta.payload?.map { it?.obj }
+            RpcPacketMeta.PACKET_TYPE_RESPONSE -> meta.payload?.get(0)?.obj
+            else -> throw Exception("RPC packet type ${meta.packetType} not recognized")
+        }
+        val payload = serializer!!.toBytes(actualInput, hint)
+        val payloadLength = payload!!.size
+
+        val rpcPacketLength = 4 + 16 + 4 + apiUrlLength + payloadLength
+        val packetBuffer = ByteArray(rpcPacketLength)
+        packetBuffer.fillWithBigEndianBytesFromInt(featureWord, 0)
+        calltraceId.toByteArray().copyInto(packetBuffer, 4)
+        packetBuffer.fillWithBigEndianBytesFromInt(apiUrlLength, 4 + 16)
+        apiUrlBytes.copyInto(packetBuffer, 4 + 16 + 4)
+        payload.copyInto(packetBuffer, 4 + 16 + 4 + apiUrlLength)
+
+        return packetBuffer
     }
 }

@@ -12,16 +12,20 @@ class RpcJsonSerializer : RpcSerializer {
     private val objectMapper = jacksonObjectMapper().registerModule(AfterburnerModule())
 
     @Suppress("NAME_SHADOWING")
-    override fun fromBytes(raw: ByteArray?, hint: RpcPayloadSerializationHint?): List<Any?>? {
+    override fun fromBytes(raw: ByteArray?, hint: RpcPayloadSerializationHint): List<Any?>? {
         if (raw == null) {
-            if (hint!!.classNames.isNullOrEmpty()) {
+            if (hint.classNames.isNullOrEmpty()) {
                 return null
             } else {
                 throw RuntimeException("Null content while ${hint.classNames.size} elements expected")
             }
         }
 
-        when (hint!!.type) {
+        if (hint.isVoid()) {
+            return listOf()
+        }
+
+        when (hint.type) {
             RpcPayloadSerializationHint.PAYLOAD_TYPE_REQUEST -> {
                 val json = objectMapper.readValue(raw, List::class.java)
 
@@ -51,7 +55,10 @@ class RpcJsonSerializer : RpcSerializer {
         }
     }
 
-    override fun <T> toBytes(obj: T?): ByteArray? {
+    override fun <T> toBytes(obj: T?, hint: RpcPayloadSerializationHint): ByteArray? {
+        if (hint.isVoid()) {
+            return "[]".toByteArray()
+        }
         return objectMapper.writeValueAsBytes(obj)
     }
 }

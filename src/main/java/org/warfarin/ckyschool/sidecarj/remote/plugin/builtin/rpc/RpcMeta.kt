@@ -5,7 +5,8 @@ data class RpcPacketMeta(
         val packetType: Int,
         val calltraceId: String,
         val apiUrl: String,
-        val payload: List<RpcObjectMeta?>?
+        val payload: List<RpcObjectMeta?>?,
+        val apiMeta: RpcApiMeta
 ) {
     companion object {
         const val PACKET_TYPE_REQUEST = RpcPayloadSerializationHint.PAYLOAD_TYPE_REQUEST

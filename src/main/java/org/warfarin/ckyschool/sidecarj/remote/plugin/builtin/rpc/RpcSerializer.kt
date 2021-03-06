@@ -2,8 +2,8 @@ package org.warfarin.ckyschool.sidecarj.remote.plugin.builtin.rpc
 
 interface RpcSerializer {
     val id: Int
-    fun fromBytes(raw: ByteArray?, hint: RpcPayloadSerializationHint?): List<Any?>?
-    fun <T> toBytes(obj: T?): ByteArray?
+    fun fromBytes(raw: ByteArray?, hint: RpcPayloadSerializationHint): List<Any?>?
+    fun <T> toBytes(obj: T?, hint: RpcPayloadSerializationHint): ByteArray?
 }
 
 data class RpcPayloadSerializationHint(
@@ -15,5 +15,10 @@ data class RpcPayloadSerializationHint(
         const val PAYLOAD_TYPE_RESPONSE = 1
 
         val VOID_PARAMS = RpcPayloadSerializationHint(PAYLOAD_TYPE_REQUEST, listOf())
+        val VOID_RESULT = RpcPayloadSerializationHint(PAYLOAD_TYPE_RESPONSE, listOf())
+    }
+
+    fun isVoid(): Boolean {
+        return classNames.isNullOrEmpty()
     }
 }
