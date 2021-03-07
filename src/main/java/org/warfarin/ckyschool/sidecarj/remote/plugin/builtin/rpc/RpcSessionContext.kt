@@ -10,11 +10,23 @@ data class RpcPacketContext(
 
 class RpcSessionContext(plugin: Byte, header: CkyschoolProtocolHeader, context: RpcPacketContext)
     : BaseRemotingPluginSessionContext<RpcPacketContext, RpcPacketMeta, RpcPacketMeta>(plugin, header, context) {
-    override fun input(): RpcPacketMeta? {
+    override fun getInput(): RpcPacketMeta? {
         return context?.arguments
     }
 
-    override fun output(): RpcPacketMeta? {
+    override fun setInput(input: RpcPacketMeta?) {
+        if (context != null) {
+            context.arguments = input
+        }
+    }
+
+    override fun getOutput(): RpcPacketMeta? {
         return context?.result
+    }
+
+    override fun setOutput(output: RpcPacketMeta?) {
+        if (context != null) {
+            context.result = output
+        }
     }
 }

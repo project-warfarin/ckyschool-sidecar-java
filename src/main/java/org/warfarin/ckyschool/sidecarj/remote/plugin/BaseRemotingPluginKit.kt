@@ -16,6 +16,8 @@ abstract class BaseRemotingPluginSessionContext<T, In, Out>(
         val header: CkyschoolProtocolHeader,
         val context: T?
 ) {
-    abstract fun input(): In?
-    abstract fun output(): Out?
+    abstract fun getInput(): In?
+    abstract fun setInput(input: In?)
+    abstract fun getOutput(): Out?
+    abstract fun setOutput(output: Out?)
 }
