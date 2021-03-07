@@ -1,7 +1,5 @@
 package org.warfarin.ckyschool.sidecarj.remote.plugin
 
-import org.warfarin.ckyschool.sidecarj.remote.model.CkyschoolRawMessage
-
-interface RemotingPluginConsumer {
-    fun request(input: CkyschoolRawMessage): CkyschoolRawMessage
+interface RemotingPluginConsumer<T> {
+    fun request(input: BaseRemotingPluginSessionContext<T>): BaseRemotingPluginSessionContext<T>
 }

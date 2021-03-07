@@ -6,8 +6,8 @@ typealias BaseRemotingPluginKitGeneric = BaseRemotingPluginKit<*, *, *, *>
 
 abstract class BaseRemotingPluginKit<T, Context: BaseRemotingPluginSessionContext<T>, CodecMeta, DecodeOut>(
         private val codec: RemotingPluginCodec<CodecMeta, DecodeOut>,
-        private val consumer: RemotingPluginConsumer,
-        private val provider: RemotingPluginProvider) : SidecarRemotingPlugged {
+        private val consumer: RemotingPluginConsumer<T>,
+        private val provider: RemotingPluginProvider<T>) : SidecarRemotingPlugged {
     // TODO implementation
 }
 
